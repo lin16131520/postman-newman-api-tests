@@ -1,0 +1,1105 @@
+{
+  "info": {
+    "_postman_id": "90cb8c42-10d2-4334-8174-be0b501763a9",
+    "name": "mockTest",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27982155"
+  },
+  "item": [
+    {
+      "name": "Auth-登录鉴权流程",
+      "item": [
+        {
+          "name": "07-登录获取Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 测试用例 1：检查登录接口是否请求成功\r",
+                  "// HTTP 状态码 200 通常表示请求成功\r",
+                  "pm.test(\"状态码是 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// 测试用例 2：检查接口是否返回 accessToken\r",
+                  "// accessToken 通常用于后续接口鉴权，比如查询用户信息、创建订单等\r",
+                  "pm.test(\"返回 accessToken\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 判断 accessToken 是字符串类型\r",
+                  "    pm.expect(jsonData.accessToken).to.be.a(\"string\");\r",
+                  "\r",
+                  "    // 判断 token 长度大于 20，避免返回空字符串或明显异常的短 token\r",
+                  "    pm.expect(jsonData.accessToken.length).to.be.above(20);\r",
+                  "});\r",
+                  "\r",
+                  "// 测试用例 3：检查返回的用户名是否正确\r",
+                  "// 用接口返回的 username 和环境变量里的 username 做对比\r",
+                  "pm.test(\"用户名返回正确\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 判断返回的用户名是否等于当前环境变量中的 username\r",
+                  "    pm.expect(jsonData.username).to.eql(pm.environment.get(\"username\"));\r",
+                  "});\r",
+                  "\r",
+                  "// 测试用例 4：把登录接口返回的 token 保存到环境变量\r",
+                  "// 后续需要登录态的接口，可以直接使用 {{access_token}} 或 {{refresh_token}}\r",
+                  "pm.test(\"保存 accessToken 和 refreshToken\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 保存 accessToken，后续接口一般放到 Authorization 请求头中\r",
+                  "    pm.environment.set(\"access_token\", jsonData.accessToken);\r",
+                  "\r",
+                  "    // 保存 refreshToken，用于 accessToken 过期后的刷新登录状态\r",
+                  "    pm.environment.set(\"refresh_token\", jsonData.refreshToken);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"expiresInMins\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{dummy_base_url}}/auth/login",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08-获取当前登录用户",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 测试用例 1：检查获取当前用户信息接口是否请求成功\r",
+                  "// HTTP 状态码 200 表示请求成功\r",
+                  "pm.test(\"状态码是 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// 测试用例 2：检查返回的用户是不是当前登录用户\r",
+                  "// 把接口返回的 username 和环境变量中的 username 做比较\r",
+                  "pm.test(\"返回当前登录用户\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 如果两边相等，说明 token 对应的确实是当前登录账号\r",
+                  "    pm.expect(jsonData.username).to.eql(pm.environment.get(\"username\"));\r",
+                  "});\r",
+                  "\r",
+                  "// 测试用例 3：检查返回结果中是否包含 email 字段\r",
+                  "// 用户信息接口通常应该返回邮箱、用户名、头像等基础信息\r",
+                  "pm.test(\"返回包含 email\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 判断响应 JSON 里是否存在 email 这个字段\r",
+                  "    pm.expect(jsonData).to.have.property(\"email\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{dummy_base_url}}/auth/me",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09-错误Token访问当前用户",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 测试用例 1：检查未授权访问时是否返回 401\r",
+                  "// 401 Unauthorized 表示没有登录、token 缺失或 token 无效\r",
+                  "pm.test(\"状态码是 401\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "\r",
+                  "// 测试用例 2：检查未授权时不会返回用户隐私信息\r",
+                  "// 未登录或 token 错误时，接口不应该泄露 username、email 等用户数据\r",
+                  "pm.test(\"未授权时不返回用户信息\", function () {\r",
+                  "    // 这里用 text() 获取原始响应内容\r",
+                  "    // 因为错误响应有时不是标准 JSON，直接 response.json() 可能会报错\r",
+                  "    const responseText = pm.response.text();\r",
+                  "\r",
+                  "    // 响应内容中不应该包含 username\r",
+                  "    pm.expect(responseText).to.not.include(\"username\");\r",
+                  "\r",
+                  "    // 响应内容中不应该包含 email\r",
+                  "    pm.expect(responseText).to.not.include(\"email\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "wrong_token_123",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer wrong_token_123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{dummy_base_url}}/auth/me",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Data-数据驱动",
+      "item": [
+        {
+          "name": "05-数据驱动查询文章",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 测试用例 1：检查状态码是否是 200\r",
+                  "pm.test(\"状态码是 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "// 测试用例 2：检查返回文章 id 是否和当前测试数据一致\r",
+                  "pm.test(\"返回文章 id 与当前测试数据一致\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 从环境变量中取出这次期望的文章 ID\r",
+                  "    const expectedId = Number(pm.environment.get(\"expected_post_id\"));\r",
+                  "\r",
+                  "    // 检查返回结果里的 id 是否等于 expected_post_id\r",
+                  "    pm.expect(jsonData.id).to.eql(expectedId);\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "// 测试用例 3：检查返回中包含 title 和 body\r",
+                  "pm.test(\"返回包含 title 和 body\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData).to.have.property(\"title\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"body\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// 定义一组要测试的文章 ID\r",
+                  "// 这里相当于我们手动准备了一组测试数据：[1, 2, 3, 4, 5]\r",
+                  "const postIds = [1, 2, 3, 4, 5];\r",
+                  "\r",
+                  "// 从环境变量里获取当前执行到第几个 ID\r",
+                  "// 如果第一次运行，还没有 current_index，就默认从 0 开始\r",
+                  "let currentIndex = Number(pm.environment.get(\"current_index\") || 0);\r",
+                  "\r",
+                  "// 根据 currentIndex 从 postIds 数组里取出当前要测试的文章 ID\r",
+                  "// 第一次 currentIndex = 0，取到 postIds[0]，也就是 1\r",
+                  "const currentPostId = postIds[currentIndex];\r",
+                  "\r",
+                  "// 把当前文章 ID 保存到环境变量 current_post_id\r",
+                  "// URL 里的 {{current_post_id}} 会读取这个值\r",
+                  "pm.environment.set(\"current_post_id\", currentPostId);\r",
+                  "\r",
+                  "// 把期望的文章 ID 也保存起来，方便 Tests 里断言\r",
+                  "pm.environment.set(\"expected_post_id\", currentPostId);\r",
+                  "\r",
+                  "// currentIndex 加 1，准备给下一次运行使用\r",
+                  "currentIndex = currentIndex + 1;\r",
+                  "\r",
+                  "// 如果已经跑完 1、2、3、4、5，就重置为 0\r",
+                  "// 这样下次重新运行时，又会从 1 开始\r",
+                  "if (currentIndex >= postIds.length) {\r",
+                  "    currentIndex = 0;\r",
+                  "}\r",
+                  "\r",
+                  "// 保存新的 current_index\r",
+                  "pm.environment.set(\"current_index\", currentIndex);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{current_post_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "{{current_post_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Project02-电商购物车流程",
+      "item": [
+        {
+          "name": "新建 10-查询商品详情",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 测试用例 1：检查接口返回的 HTTP 状态码是不是 200\r",
+                  "// 200 表示请求成功\r",
+                  "pm.test(\"状态码是 200\", function () {\r",
+                  "    // pm.response 表示接口返回的响应\r",
+                  "    // to.have.status(200) 表示期望状态码等于 200\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "// 测试用例 2：检查返回的商品 id 是否正确\r",
+                  "// 目的是确认接口返回的是我们要查询的那个商品\r",
+                  "pm.test(\"商品 id 正确\", function () {\r",
+                  "    // 把接口返回的 JSON 字符串转换成 JavaScript 对象\r",
+                  "    // 这样才能通过 jsonData.id、jsonData.price 这种方式取字段\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 从当前 Postman 环境变量中获取 product_id\r",
+                  "    // 注意：环境变量取出来默认是字符串，比如 \"1\"\r",
+                  "    // Number(...) 是把字符串 \"1\" 转成数字 1\r",
+                  "    const expectedProductId = Number(pm.environment.get(\"product_id\"));\r",
+                  "\r",
+                  "    // 检查响应里的 id 是否等于环境变量里的 product_id\r",
+                  "    // eql 表示严格比较，值和类型都要匹配\r",
+                  "    pm.expect(jsonData.id).to.eql(expectedProductId);\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "// 测试用例 3：检查商品是否包含价格和库存\r",
+                  "// 目的是确认商品详情接口返回了关键业务字段\r",
+                  "pm.test(\"商品包含价格和库存\", function () {\r",
+                  "    // 解析接口返回的 JSON 数据\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // 检查 price 字段是不是数字类型\r",
+                  "    // price 表示商品价格，正常应该是 number\r",
+                  "    pm.expect(jsonData.price).to.be.a(\"number\");\r",
+                  "\r",
+                  "    // 检查 stock 字段是不是数字类型\r",
+                  "    // stock 表示商品库存，正常也应该是 number\r",
+                  "    pm.expect(jsonData.stock).to.be.a(\"number\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{dummy_base_url}}/products/{{product_id}}",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "新建 11-加入购物车",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口：POST {{dummy_base_url}}/carts/add\r",
+                  "// 作用：把商品加入购物车\r",
+                  "// 环境变量值：dummy_base_url、ecommerce_user_id、product_id、product_quantity\r",
+                  "// 接口文档字段：id、products、userId、total、totalQuantity、totalProducts\r",
+                  "\r",
+                  "pm.test(\"状态码是 201\", function () {\r",
+                  "    // 201 是接口文档定义的创建成功状态码\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"返回购物车 id，并保存到环境变量\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // jsonData.id 是接口返回的购物车 id，不是商品 id\r",
+                  "    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+                  "\r",
+                  "    // created_cart_id 是我们自己定义的环境变量，供后续查询/修改使用\r",
+                  "    pm.environment.set(\"created_cart_id\", jsonData.id);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"返回的 userId 正确\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // ecommerce_user_id 是环境变量\r",
+                  "    const expectedUserId = Number(pm.environment.get(\"ecommerce_user_id\"));\r",
+                  "\r",
+                  "    // userId 是接口文档返回字段\r",
+                  "    pm.expect(jsonData.userId).to.eql(expectedUserId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"商品 id 和数量正确\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // product_id、product_quantity 是环境变量\r",
+                  "    const expectedProductId = Number(pm.environment.get(\"product_id\"));\r",
+                  "    const expectedQuantity = Number(pm.environment.get(\"product_quantity\"));\r",
+                  "\r",
+                  "    // products 是接口文档返回字段，商品信息在 products[0] 里\r",
+                  "    pm.expect(jsonData.products[0].id).to.eql(expectedProductId);\r",
+                  "    pm.expect(jsonData.products[0].quantity).to.eql(expectedQuantity);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"购物车金额和总数量正确\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    // total、totalQuantity 是接口文档返回字段\r",
+                  "    pm.expect(jsonData.total).to.be.above(0);\r",
+                  "    pm.expect(jsonData.totalQuantity).to.eql(Number(pm.environment.get(\"product_quantity\")));\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userId\": {{ecommerce_user_id}},\r\n  \"products\": [\r\n    {\r\n      \"id\": {{product_id}},\r\n      \"quantity\": {{product_quantity}}\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{dummy_base_url}}/carts/add",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12-查询购物车详情",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：12-查询购物车详情\r",
+                  "// 请求方式：GET\r",
+                  "// 请求地址：{{dummy_base_url}}/carts/{{cart_id}}\r",
+                  "// 环境变量值：dummy_base_url、cart_id\r",
+                  "// 接口文档字段：id、products、total、discountedTotal、userId、totalProducts、totalQuantity\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义一个测试用例：检查 HTTP 状态码是否为 200\r",
+                  "    pm.response.to.have.status(200); // 断言接口响应状态码必须等于 200，表示查询成功\r",
+                  "}); // 结束“状态码是 200”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"购物车 id 正确\", function () { // 定义一个测试用例：检查返回的购物车 id 是否正确\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const expectedCartId = Number(pm.environment.get(\"cart_id\")); // 从环境变量 cart_id 中取值，并转成数字类型\r",
+                  "    pm.expect(jsonData.id).to.eql(expectedCartId); // 断言接口返回字段 id 等于环境变量 cart_id\r",
+                  "}); // 结束“购物车 id 正确”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"返回 products 商品列表\", function () { // 定义一个测试用例：检查是否返回商品列表\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.products).to.be.an(\"array\"); // 断言接口文档字段 products 的类型必须是数组\r",
+                  "    pm.expect(jsonData.products.length).to.be.above(0); // 断言 products 数组长度大于 0，表示购物车里有商品\r",
+                  "}); // 结束“返回 products 商品列表”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"返回购物车金额字段\", function () { // 定义一个测试用例：检查购物车金额字段\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.total).to.be.a(\"number\"); // 断言接口文档字段 total 必须是数字类型\r",
+                  "    pm.expect(jsonData.discountedTotal).to.be.a(\"number\"); // 断言接口文档字段 discountedTotal 必须是数字类型\r",
+                  "}); // 结束“返回购物车金额字段”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"返回商品总数和总数量\", function () { // 定义一个测试用例：检查商品统计字段\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.totalProducts).to.be.a(\"number\"); // 断言接口文档字段 totalProducts 必须是数字类型\r",
+                  "    pm.expect(jsonData.totalQuantity).to.be.a(\"number\"); // 断言接口文档字段 totalQuantity 必须是数字类型\r",
+                  "}); // 结束“返回商品总数和总数量”这个测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{dummy_base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "13-修改购物车商品数量",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：13-修改购物车商品数量\r",
+                  "// 请求方式：PUT\r",
+                  "// 请求地址：{{dummy_base_url}}/carts/{{cart_id}}\r",
+                  "// 环境变量值：dummy_base_url、cart_id、product_id\r",
+                  "// 接口文档字段：id、products、total、discountedTotal、totalProducts、totalQuantity\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义一个测试用例：检查 HTTP 状态码是否为 200\r",
+                  "    pm.response.to.have.status(200); // 断言接口响应状态码必须等于 200，表示修改成功\r",
+                  "}); // 结束“状态码是 200”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"购物车 id 正确\", function () { // 定义一个测试用例：检查修改的是不是指定购物车\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const expectedCartId = Number(pm.environment.get(\"cart_id\")); // 从环境变量 cart_id 中取值，并转成数字类型\r",
+                  "    pm.expect(jsonData.id).to.eql(expectedCartId); // 断言接口返回字段 id 等于环境变量 cart_id\r",
+                  "}); // 结束“购物车 id 正确”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"新增或合并的商品存在\", function () { // 定义一个测试用例：检查目标商品是否在返回的商品列表中\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const expectedProductId = Number(pm.environment.get(\"product_id\")); // 从环境变量 product_id 中取值，并转成数字类型\r",
+                  "    const targetProduct = jsonData.products.find(function (item) { // 在接口返回的 products 数组中查找目标商品\r",
+                  "        return item.id === expectedProductId; // 返回 id 等于 product_id 的那一项商品\r",
+                  "    }); // 结束 find 查找逻辑，并把结果保存到 targetProduct\r",
+                  "    pm.expect(targetProduct).to.not.be.undefined; // 断言目标商品必须存在，不能是 undefined\r",
+                  "}); // 结束“新增或合并的商品存在”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"目标商品数量修改为 3\", function () { // 定义一个测试用例：检查目标商品数量是否为 3\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const expectedProductId = Number(pm.environment.get(\"product_id\")); // 从环境变量 product_id 中取值，并转成数字类型\r",
+                  "    const targetProduct = jsonData.products.find(function (item) { // 在 products 数组中查找目标商品\r",
+                  "        return item.id === expectedProductId; // 找到 id 等于 product_id 的商品\r",
+                  "    }); // 结束 find 查找逻辑\r",
+                  "    pm.expect(targetProduct.quantity).to.eql(3); // 断言目标商品的 quantity 字段等于 3\r",
+                  "}); // 结束“目标商品数量修改为 3”这个测试用例\r",
+                  "\r",
+                  "pm.test(\"购物车统计字段正确\", function () { // 定义一个测试用例：检查购物车统计字段是否存在且类型正确\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.total).to.be.a(\"number\"); // 断言接口文档字段 total 必须是数字类型\r",
+                  "    pm.expect(jsonData.totalProducts).to.be.a(\"number\"); // 断言接口文档字段 totalProducts 必须是数字类型\r",
+                  "    pm.expect(jsonData.totalQuantity).to.be.a(\"number\"); // 断言接口文档字段 totalQuantity 必须是数字类型\r",
+                  "}); // 结束“购物车统计字段正确”这个测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"merge\": true,\r\n  \"products\": [\r\n    {\r\n      \"id\": {{product_id}},\r\n      \"quantity\": 3\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{dummy_base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "14-删除购物车",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：14-删除购物车\r",
+                  "// 请求方式：DELETE\r",
+                  "// 请求地址：{{dummy_base_url}}/carts/{{cart_id}}\r",
+                  "// 环境变量值：dummy_base_url、cart_id\r",
+                  "// 接口文档字段：id、products、total、discountedTotal、userId、totalProducts、totalQuantity、isDeleted、deletedOn\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义一个测试用例：检查删除接口是否请求成功\r",
+                  "    pm.response.to.have.status(200); // 断言接口响应状态码等于 200，表示删除请求成功\r",
+                  "}); // 结束“状态码是 200”测试用例\r",
+                  "\r",
+                  "pm.test(\"删除的购物车 id 正确\", function () { // 定义一个测试用例：检查删除的是不是指定购物车\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const expectedCartId = Number(pm.environment.get(\"cart_id\")); // 从环境变量 cart_id 中取值，并转换成数字类型\r",
+                  "    pm.expect(jsonData.id).to.eql(expectedCartId); // 断言接口文档字段 id 等于环境变量 cart_id\r",
+                  "}); // 结束“删除的购物车 id 正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回删除标记 isDeleted\", function () { // 定义一个测试用例：检查接口是否返回删除标记\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.isDeleted).to.eql(true); // 断言接口文档字段 isDeleted 等于 true，表示已删除\r",
+                  "}); // 结束“返回删除标记 isDeleted”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回删除时间 deletedOn\", function () { // 定义一个测试用例：检查接口是否返回删除时间\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.deletedOn).to.be.a(\"string\"); // 断言接口文档字段 deletedOn 是字符串类型\r",
+                  "    pm.expect(jsonData.deletedOn.length).to.be.above(0); // 断言 deletedOn 不是空字符串\r",
+                  "}); // 结束“返回删除时间 deletedOn”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回购物车统计字段\", function () { // 定义一个测试用例：检查删除响应里是否仍返回购物车统计数据\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.total).to.be.a(\"number\"); // 断言接口文档字段 total 是数字类型\r",
+                  "    pm.expect(jsonData.totalProducts).to.be.a(\"number\"); // 断言接口文档字段 totalProducts 是数字类型\r",
+                  "    pm.expect(jsonData.totalQuantity).to.be.a(\"number\"); // 断言接口文档字段 totalQuantity 是数字类型\r",
+                  "}); // 结束“返回购物车统计字段”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{dummy_base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15-异常查询不存在购物车",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：15-异常查询不存在购物车\r",
+                  "// 请求方式：GET\r",
+                  "// 请求地址：{{dummy_base_url}}/carts/{{invalid_cart_id}}\r",
+                  "// 环境变量值：dummy_base_url、invalid_cart_id\r",
+                  "// 接口返回字段：message\r",
+                  "// 正常购物车业务字段：id、products、total、userId、totalProducts、totalQuantity\r",
+                  "\r",
+                  "pm.test(\"状态码是 404\", function () { // 定义测试用例：检查不存在购物车是否返回 404\r",
+                  "    pm.response.to.have.status(404); // 断言 HTTP 状态码等于 404，表示资源不存在\r",
+                  "}); // 结束“状态码是 404”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回错误提示 message\", function () { // 定义测试用例：检查异常响应是否返回错误提示\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.message).to.be.a(\"string\"); // 断言接口返回字段 message 是字符串类型\r",
+                  "    pm.expect(jsonData.message).to.include(\"not found\"); // 断言 message 中包含 not found，表示未找到购物车\r",
+                  "}); // 结束“返回错误提示 message”测试用例\r",
+                  "\r",
+                  "pm.test(\"错误提示包含无效购物车 id\", function () { // 定义测试用例：检查错误提示里是否包含我们传入的无效 id\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const invalidCartId = pm.environment.get(\"invalid_cart_id\"); // 从环境变量 invalid_cart_id 中取出无效购物车 id\r",
+                  "    pm.expect(jsonData.message).to.include(invalidCartId); // 断言 message 中包含环境变量 invalid_cart_id 的值\r",
+                  "}); // 结束“错误提示包含无效购物车 id”测试用例\r",
+                  "\r",
+                  "pm.test(\"不返回正常购物车业务字段\", function () { // 定义测试用例：检查异常响应不会返回正常购物车数据\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"products\"); // 断言响应中不包含正常购物车字段 products\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"total\"); // 断言响应中不包含正常购物车字段 total\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"userId\"); // 断言响应中不包含正常购物车字段 userId\r",
+                  "}); // 结束“不返回正常购物车业务字段”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{dummy_base_url}}/carts/{{invalid_cart_id}}",
+              "host": [
+                "{{dummy_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{invalid_cart_id}}\n"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01-查询文章详情",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 检查状态码\r",
+              "pm.response.to.have.status(200);\r",
+              "\r",
+              "// 获取返回 JSON\r",
+              "const jsonData = pm.response.json();\r",
+              "\r",
+              "// 检查某个字段是否等于指定值\r",
+              "pm.expect(jsonData.id).to.eql(1);\r",
+              "\r",
+              "// 检查是否包含某个字段\r",
+              "pm.expect(jsonData).to.have.property(\"title\");\r",
+              "\r",
+              "// 检查响应时间是否小于 3000 毫秒\r",
+              "pm.expect(pm.response.responseTime).to.be.below(3000);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/posts/{{post_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "posts",
+            "{{post_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02-新增文章",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 测试用例 1：检查状态码是否是 201\r",
+              "// 201 表示 Created，也就是“创建成功”\r",
+              "// 一般 POST 新增数据成功时，会返回 201\r",
+              "pm.test(\"状态码是 201\", function () {\r",
+              "\r",
+              "    // 检查接口响应的 HTTP 状态码是否等于 201\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 2：检查返回结果中是否包含 id 字段\r",
+              "// 新增成功后，后端通常会返回新数据的 id\r",
+              "pm.test(\"返回包含 id\", function () {\r",
+              "\r",
+              "    // 把接口返回的 JSON 数据转换成 JavaScript 对象\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 检查 jsonData 里面是否有 id 这个字段\r",
+              "    pm.expect(jsonData).to.have.property(\"id\");\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 3：检查返回的 title 是否正确\r",
+              "// 因为我们请求 Body 里提交的 title 是“Postman实战测试”\r",
+              "// 所以这里要检查接口返回的 title 是否和提交的一样\r",
+              "pm.test(\"title 返回正确\", function () {\r",
+              "\r",
+              "    // 获取接口返回的 JSON 数据\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 检查返回结果里的 title 是否等于“Postman实战测试”\r",
+              "    pm.expect(jsonData.title).to.eql(\"Postman实战测试\");\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 4：检查返回的 userId 是否正确\r",
+              "// 因为我们提交的 userId 是 1\r",
+              "// 所以这里检查接口返回的 userId 是否也等于 1\r",
+              "pm.test(\"userId 返回正确\", function () {\r",
+              "\r",
+              "    // 获取接口返回的 JSON 数据\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 检查返回结果里的 userId 是否等于数字 1\r",
+              "    pm.expect(jsonData.userId).to.eql(1);\r",
+              "});\r",
+              "\r",
+              "// 测试用例：把新增文章返回的 id 保存到环境变量里\r",
+              "// 作用：后面的查询、修改、删除接口可以直接使用这个 id\r",
+              "pm.test(\"保存新增文章 id 到环境变量\", function () {\r",
+              "\r",
+              "    // 获取接口返回的 JSON 数据\r",
+              "    // 你下面响应结果里现在返回了 id: 101\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 把返回的 id 保存到环境变量 created_post_id 里面\r",
+              "    // 保存后，后续接口可以用 {{created_post_id}} 引用它\r",
+              "    pm.environment.set(\"created_post_id\", jsonData.id);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Postman实战测试\",\r\n  \"body\": \"这是我用Postman发送的POST请求\",\r\n  \"userId\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/posts",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "posts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03-修改文章",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 测试用例 1：检查修改接口是否请求成功\r",
+              "// 修改成功一般返回 200\r",
+              "pm.test(\"状态码是 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 2：检查返回的文章 id 是否正确\r",
+              "// 因为 URL 里用的是 {{post_id}}，当前 post_id 是 1\r",
+              "pm.test(\"返回文章 id 正确\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 检查返回结果里的 id 是否等于 1\r",
+              "    pm.expect(jsonData.id).to.eql(1);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 3：检查标题是否修改成功\r",
+              "pm.test(\"title 修改成功\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 检查返回的 title 是否等于我们 Body 里提交的新标题\r",
+              "    pm.expect(jsonData.title).to.eql(\"Postman修改文章测试\");\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 4：检查 userId 是否正确\r",
+              "pm.test(\"userId 返回正确\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 检查 userId 是否仍然是 1\r",
+              "    pm.expect(jsonData.userId).to.eql(1);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"id\": 1,\r\n  \"title\": \"Postman修改文章测试\",\r\n  \"body\": \"这是用PUT请求修改后的内容\",\r\n  \"userId\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/posts/{{post_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "posts",
+            "{{post_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04-删除文章",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 测试用例 1：检查删除接口是否请求成功\r",
+              "// 删除成功后，很多接口会返回 200 OK\r",
+              "pm.test(\"状态码是 200\", function () {\r",
+              "\r",
+              "    // 检查接口返回的 HTTP 状态码是不是 200\r",
+              "    // 如果不是 200，这个测试就会失败\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "// 测试用例 2：检查删除接口是否返回空对象\r",
+              "pm.test(\"删除接口返回空对象\", function () {\r",
+              "\r",
+              "    // 获取接口返回的 JSON 数据\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    // 严格检查返回结果是否等于 {}\r",
+              "    // deep.eql 用来比较对象内容是否完全一致\r",
+              "    pm.expect(jsonData).to.deep.eql({});\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/posts/{{post_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "posts",
+            "{{post_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06-异常查询不存在文章",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 测试用例 1：检查接口返回的 HTTP 状态码是不是 404\r",
+              "// 404 表示请求的资源不存在，比如文章 id=9999 不存在\r",
+              "pm.test(\"状态码是 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "// 测试用例 2：检查接口返回的 JSON 数据是不是空对象 {}\r",
+              "// 因为文章不存在，所以接口没有返回 title、body、userId 等文章信息\r",
+              "pm.test(\"返回空对象\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.deep.eql({});\r",
+              "});\r",
+              "\r",
+              "// 测试用例 3：检查返回结果里没有 title 字段\r",
+              "// 如果不存在的文章还返回了 title，说明接口数据可能有问题\r",
+              "pm.test(\"不返回文章 title\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.not.have.property(\"title\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/posts/{{invalid_post_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "posts",
+            "{{invalid_post_id}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "// 公共测试用例 1：检查接口响应时间是否小于 3000ms\r",
+          "// 这个断言可以放在 Collection 级别，让集合里的每个请求都自动执行\r",
+          "pm.test(\"公共断言：响应时间小于 3000ms\", function () {\r",
+          "    // pm.response.responseTime 表示当前接口的响应耗时，单位是毫秒\r",
+          "    // below(3000) 表示响应时间必须小于 3000ms，也就是 3 秒\r",
+          "    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+          "});\r",
+          "\r",
+          "// 公共测试用例 2：检查接口没有出现服务器错误\r",
+          "// 5xx 状态码通常表示服务器异常，比如 500、502、503、504\r",
+          "pm.test(\"公共断言：没有服务器 5xx 错误\", function () {\r",
+          "    // pm.response.code 表示当前接口返回的 HTTP 状态码\r",
+          "    // below(500) 表示状态码必须小于 500，也就是不能出现服务器错误\r",
+          "    pm.expect(pm.response.code).to.be.below(500);\r",
+          "});"
+        ]
+      }
+    }
+  ]
+}

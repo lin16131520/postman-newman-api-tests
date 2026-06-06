@@ -1,0 +1,13 @@
+{
+  "name": "postman-newman-api-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Postman and Newman API automation test project.",
+  "scripts": {
+    "test:ecommerce": "newman run collections/mockTest.postman_collection.json -e environments/JSONPlaceholder-Test.postman_environment.json --folder \"$FOLDER_NAME\" -r cli,htmlextra --reporter-htmlextra-export reports/ecommerce-cart-report.html"
+  },
+  "devDependencies": {
+    "newman": "^6.2.1",
+    "newman-reporter-htmlextra": "^1.23.1"
+  }
+}
