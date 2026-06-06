@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  ecommerce-cart:
+  api-tests:
+    name: Postman Newman API Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +33,25 @@ jobs:
           export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
           npm run test:ecommerce
 
-      - name: Upload Newman HTML report
+      - name: Run mock order API tests
+        env:
+          FOLDER_NAME_BASE64: UHJvamVjdDAzLU1vY2vnlLXllYborqLljZXmjqXlj6M=
+        run: |
+          export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
+          npm run test:mock-order
+
+      - name: Upload ecommerce cart HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ecommerce-cart-report
           path: reports/ecommerce-cart-report.html
+          if-no-files-found: error
+
+      - name: Upload mock order HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mock-order-report
+          path: reports/mock-order-report.html
           if-no-files-found: error
