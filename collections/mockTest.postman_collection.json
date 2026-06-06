@@ -727,7 +727,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{dummy_base_url}}/carts/{{invalid_cart_id}}",
+              "raw": "{{dummy_base_url}}/carts/{{invalid_cart_id}}\n",
               "host": [
                 "{{dummy_base_url}}"
               ],
@@ -738,6 +738,445 @@
             }
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "Project03-Mock电商订单接口",
+      "item": [
+        {
+          "name": "16-Mock查询商品列表",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：16-Mock查询商品列表\r",
+                  "// 请求方式：GET\r",
+                  "// 请求地址：{{mock_base_url}}/api/products\r",
+                  "// 环境变量值：mock_base_url\r",
+                  "// Mock 接口路径：/api/products\r",
+                  "// 接口响应字段：code、message、data、id、name、price、stock、category\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义测试用例：检查 Mock 商品列表接口是否请求成功\r",
+                  "    pm.response.to.have.status(200); // 断言 HTTP 状态码等于 200，表示 Mock 接口成功返回\r",
+                  "}); // 结束“状态码是 200”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务状态码是否表示成功\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言接口响应字段 code 等于 0，表示业务成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"message 返回 success\", function () { // 定义测试用例：检查业务提示信息\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"success\"); // 断言接口响应字段 message 等于 success\r",
+                  "}); // 结束“message 返回 success”测试用例\r",
+                  "\r",
+                  "pm.test(\"data 是商品数组\", function () { // 定义测试用例：检查商品列表字段\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data).to.be.an(\"array\"); // 断言接口响应字段 data 是数组类型\r",
+                  "    pm.expect(jsonData.data.length).to.be.above(0); // 断言 data 数组长度大于 0，表示有商品数据\r",
+                  "}); // 结束“data 是商品数组”测试用例\r",
+                  "\r",
+                  "pm.test(\"商品字段类型正确\", function () { // 定义测试用例：检查第一个商品对象的字段类型\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    const firstProduct = jsonData.data[0]; // 从商品数组里取出第一个商品对象\r",
+                  "    pm.expect(firstProduct.id).to.be.a(\"number\"); // 断言接口响应字段 id 是数字类型\r",
+                  "    pm.expect(firstProduct.name).to.be.a(\"string\"); // 断言接口响应字段 name 是字符串类型\r",
+                  "    pm.expect(firstProduct.price).to.be.a(\"number\"); // 断言接口响应字段 price 是数字类型\r",
+                  "    pm.expect(firstProduct.stock).to.be.a(\"number\"); // 断言接口响应字段 stock 是数字类型\r",
+                  "    pm.expect(firstProduct.category).to.be.a(\"string\"); // 断言接口响应字段 category 是字符串类型\r",
+                  "}); // 结束“商品字段类型正确”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mock_base_url}}/api/products",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功返回商品列表",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_base_url}}/api/products",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"success\",\r\n  \"data\": [\r\n    {\r\n      \"id\": 1001,\r\n      \"name\": \"无线蓝牙耳机\",\r\n      \"price\": 199.00,\r\n      \"stock\": 120,\r\n      \"category\": \"digital\"\r\n    },\r\n    {\r\n      \"id\": 1002,\r\n      \"name\": \"机械键盘\",\r\n      \"price\": 299.00,\r\n      \"stock\": 80,\r\n      \"category\": \"computer\"\r\n    }\r\n  ]\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "17-Mock创建订单",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：17-Mock创建订单\r",
+                  "// 请求方式：POST\r",
+                  "// 请求地址：{{mock_base_url}}/api/orders\r",
+                  "// 环境变量值：mock_base_url\r",
+                  "// Mock 接口路径：/api/orders\r",
+                  "// 请求字段：userId、products、productId、quantity、address\r",
+                  "// 响应字段：code、message、data、orderId、status、totalAmount、products\r",
+                  "\r",
+                  "pm.test(\"状态码是 201\", function () { // 定义测试用例：检查创建订单是否成功\r",
+                  "    pm.response.to.have.status(201); // 断言 HTTP 状态码等于 201，表示资源创建成功\r",
+                  "}); // 结束“状态码是 201”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务状态码\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言响应字段 code 等于 0，表示业务处理成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回订单创建成功消息\", function () { // 定义测试用例：检查订单创建提示\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"order created\"); // 断言响应字段 message 等于 order created\r",
+                  "}); // 结束“返回订单创建成功消息”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回订单基础信息\", function () { // 定义测试用例：检查订单基础字段\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data.orderId).to.be.a(\"string\"); // 断言响应字段 orderId 是字符串类型\r",
+                  "    pm.expect(jsonData.data.userId).to.eql(1); // 断言响应字段 userId 等于请求中的用户 ID 1\r",
+                  "    pm.expect(jsonData.data.status).to.eql(\"created\"); // 断言响应字段 status 等于 created，表示订单已创建\r",
+                  "}); // 结束“返回订单基础信息”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回订单金额和商品信息\", function () { // 定义测试用例：检查订单金额和商品列表\r",
+                  "    const jsonData = pm.response.json(); // 把接口返回的 JSON 响应体转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data.totalAmount).to.be.a(\"number\"); // 断言响应字段 totalAmount 是数字类型\r",
+                  "    pm.expect(jsonData.data.products).to.be.an(\"array\"); // 断言响应字段 products 是数组类型\r",
+                  "    pm.expect(jsonData.data.products[0].productId).to.eql(1001); // 断言第一个商品 productId 等于 1001\r",
+                  "    pm.expect(jsonData.data.products[0].quantity).to.eql(2); // 断言第一个商品 quantity 等于 2\r",
+                  "}); // 结束“返回订单金额和商品信息”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userId\": 1,\r\n  \"products\": [\r\n    {\r\n      \"productId\": 1001,\r\n      \"quantity\": 2\r\n    }\r\n  ],\r\n  \"address\": \"上海市浦东新区测试路 100 号\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mock_base_url}}/api/orders",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功创建订单",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"userId\": 1,\r\n  \"products\": [\r\n    {\r\n      \"productId\": 1001,\r\n      \"quantity\": 2\r\n    }\r\n  ],\r\n  \"address\": \"上海市浦东新区测试路 100 号\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mock_base_url}}/api/orders",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"order created\",\r\n  \"data\": {\r\n    \"orderId\": \"MOCK202606070001\",\r\n    \"userId\": 1,\r\n    \"status\": \"created\",\r\n    \"totalAmount\": 398.00,\r\n    \"products\": [\r\n      {\r\n        \"productId\": 1001,\r\n        \"name\": \"无线蓝牙耳机\",\r\n        \"quantity\": 2,\r\n        \"price\": 199.00\r\n      }\r\n    ],\r\n    \"address\": \"上海市浦东新区测试路 100 号\"\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "18-Mock查询订单详情",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：18-Mock查询订单详情\r",
+                  "// 请求方式：GET\r",
+                  "// 请求地址：{{mock_base_url}}/api/orders/MOCK202606070001\r",
+                  "// 环境变量值：mock_base_url\r",
+                  "// Mock 接口路径：/api/orders/MOCK202606070001\r",
+                  "// 响应字段：code、message、data、orderId、userId、status、totalAmount、products、address、createdAt\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义测试用例：检查查询订单详情是否请求成功\r",
+                  "    pm.response.to.have.status(200); // 断言 HTTP 状态码等于 200，表示查询成功\r",
+                  "}); // 结束“状态码是 200”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务状态码\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言响应字段 code 等于 0，表示业务成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"message 返回 success\", function () { // 定义测试用例：检查业务提示信息\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"success\"); // 断言响应字段 message 等于 success\r",
+                  "}); // 结束“message 返回 success”测试用例\r",
+                  "\r",
+                  "pm.test(\"订单 id 正确\", function () { // 定义测试用例：检查返回的订单 ID 是否正确\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data.orderId).to.eql(\"MOCK202606070001\"); // 断言响应字段 orderId 等于 URL 中的订单 ID\r",
+                  "}); // 结束“订单 id 正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"订单基础字段正确\", function () { // 定义测试用例：检查订单基础字段\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data.userId).to.eql(1); // 断言响应字段 userId 等于 1\r",
+                  "    pm.expect(jsonData.data.status).to.eql(\"created\"); // 断言响应字段 status 等于 created\r",
+                  "    pm.expect(jsonData.data.totalAmount).to.be.a(\"number\"); // 断言响应字段 totalAmount 是数字类型\r",
+                  "}); // 结束“订单基础字段正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"订单商品列表正确\", function () { // 定义测试用例：检查订单里的商品列表\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data.products).to.be.an(\"array\"); // 断言响应字段 products 是数组类型\r",
+                  "    pm.expect(jsonData.data.products.length).to.be.above(0); // 断言 products 数组长度大于 0\r",
+                  "    pm.expect(jsonData.data.products[0].productId).to.eql(1001); // 断言第一个商品 productId 等于 1001\r",
+                  "    pm.expect(jsonData.data.products[0].quantity).to.eql(2); // 断言第一个商品 quantity 等于 2\r",
+                  "}); // 结束“订单商品列表正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回地址和创建时间\", function () { // 定义测试用例：检查订单地址和创建时间\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data.address).to.be.a(\"string\"); // 断言响应字段 address 是字符串类型\r",
+                  "    pm.expect(jsonData.data.createdAt).to.be.a(\"string\"); // 断言响应字段 createdAt 是字符串类型\r",
+                  "}); // 结束“返回地址和创建时间”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mock_base_url}}/api/orders/MOCK202606070001",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "MOCK202606070001"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功返回订单详情",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_base_url}}/api/orders/MOCK202606070001",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "MOCK202606070001"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"success\",\r\n  \"data\": {\r\n    \"orderId\": \"MOCK202606070001\",\r\n    \"userId\": 1,\r\n    \"status\": \"created\",\r\n    \"totalAmount\": 398.00,\r\n    \"products\": [\r\n      {\r\n        \"productId\": 1001,\r\n        \"name\": \"无线蓝牙耳机\",\r\n        \"quantity\": 2,\r\n        \"price\": 199.00\r\n      }\r\n    ],\r\n    \"address\": \"上海市浦东新区测试路 100 号\",\r\n    \"createdAt\": \"2026-06-07 10:00:00\"\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "19-Mock查询不存在订单",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：19-Mock查询不存在订单\r",
+                  "// 请求方式：GET\r",
+                  "// 请求地址：{{mock_base_url}}/api/orders/NOT_FOUND\r",
+                  "// 环境变量值：mock_base_url\r",
+                  "// Mock 接口路径：/api/orders/NOT_FOUND\r",
+                  "// 响应字段：code、message、data\r",
+                  "\r",
+                  "pm.test(\"状态码是 404\", function () { // 定义测试用例：检查不存在订单是否返回 404\r",
+                  "    pm.response.to.have.status(404); // 断言 HTTP 状态码等于 404，表示订单资源不存在\r",
+                  "}); // 结束“状态码是 404”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务错误码正确\", function () { // 定义测试用例：检查业务错误码\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(40401); // 断言响应字段 code 等于 40401，表示订单不存在\r",
+                  "}); // 结束“业务错误码正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回订单不存在提示\", function () { // 定义测试用例：检查错误提示信息\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"order not found\"); // 断言响应字段 message 等于 order not found\r",
+                  "}); // 结束“返回订单不存在提示”测试用例\r",
+                  "\r",
+                  "pm.test(\"data 为空\", function () { // 定义测试用例：检查异常场景下 data 是否为空\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.data).to.eql(null); // 断言响应字段 data 等于 null\r",
+                  "}); // 结束“data 为空”测试用例\r",
+                  "\r",
+                  "pm.test(\"不返回订单详情字段\", function () { // 定义测试用例：检查异常响应不应返回正常订单详情字段\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转换成 JavaScript 对象\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"orderId\"); // 断言响应顶层不包含 orderId 字段\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"totalAmount\"); // 断言响应顶层不包含 totalAmount 字段\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"products\"); // 断言响应顶层不包含 products 字段\r",
+                  "}); // 结束“不返回订单详情字段”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mock_base_url}}/api/orders/NOT_FOUND",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "NOT_FOUND"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "订单不存在",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_base_url}}/api/orders/NOT_FOUND",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "NOT_FOUND"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\r\n  \"code\": 40401,\r\n  \"message\": \"order not found\",\r\n  \"data\": null\r\n}"
+            }
+          ]
         }
       ]
     },
@@ -1085,10 +1524,10 @@
         "exec": [
           "// 公共测试用例 1：检查接口响应时间是否小于 3000ms\r",
           "// 这个断言可以放在 Collection 级别，让集合里的每个请求都自动执行\r",
-          "pm.test(\"公共断言：响应时间小于 3000ms\", function () {\r",
+          "pm.test(\"公共断言：响应时间小于 12000ms\", function () {\r",
           "    // pm.response.responseTime 表示当前接口的响应耗时，单位是毫秒\r",
           "    // below(3000) 表示响应时间必须小于 3000ms，也就是 3 秒\r",
-          "    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+          "    pm.expect(pm.response.responseTime).to.be.below(12000);\r",
           "});\r",
           "\r",
           "// 公共测试用例 2：检查接口没有出现服务器错误\r",

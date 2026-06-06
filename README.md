@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-本项目基于 Postman 和 Newman 完成 RESTful API 接口自动化测试，覆盖文章 CRUD、CSV 数据驱动、登录鉴权、Token 传递、电商购物车流程、异常场景和 Collection 级公共断言，并通过 Newman 生成 HTML 测试报告。
+本项目基于 Postman 和 Newman 完成 RESTful API 接口自动化测试，覆盖文章 CRUD、CSV 数据驱动、登录鉴权、Token 传递、电商购物车流程、Mock 电商订单接口、异常场景和 Collection 级公共断言，并通过 Newman 生成 HTML 测试报告。
 
 ## 技术栈
 
@@ -15,6 +15,7 @@
 - CSV 数据驱动
 - Environment 变量管理
 - Bearer Token 鉴权
+- Postman Mock Server
 - PowerShell 一键运行脚本
 - GitHub Actions CI
 - HTML Report
@@ -30,12 +31,15 @@ postman-newman
 |   `-- mockTest.postman_collection.json
 |-- environments
 |   `-- JSONPlaceholder-Test.postman_environment.json
+|   `-- Project03-Mock.postman_environment.json
 |-- data
 |   `-- post_ids.csv
 |-- reports
 |   `-- ecommerce-cart-report.html
+|   `-- mock-order-report.html
 |-- scripts
 |   `-- run-ecommerce-cart.ps1
+|   `-- run-mock-order.ps1
 |-- package.json
 `-- README.md
 ```
@@ -53,12 +57,17 @@ postman-newman
 - 修改购物车商品数量
 - 删除购物车
 - 查询不存在购物车异常场景
+- Mock 商品列表接口
+- Mock 创建订单接口
+- Mock 查询订单详情接口
+- Mock 查询不存在订单异常场景
 - Collection 级公共断言
 
 ## 本地一键运行
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\run-ecommerce-cart.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\run-mock-order.ps1
 ```
 
 ## GitHub Actions 运行
@@ -75,6 +84,7 @@ CI 流程会完成：
 - 安装 Node.js
 - 安装 Newman 和 HTML 报告插件
 - 执行电商购物车流程接口测试
+- 执行 Mock 电商订单接口测试
 - 上传 Newman HTML 测试报告
 
 也可以在 GitHub Actions 页面通过 `workflow_dispatch` 手动触发运行。
@@ -93,12 +103,22 @@ HTML 报告路径：
 
 ```text
 reports\ecommerce-cart-report.html
+reports\mock-order-report.html
+```
+
+Mock 电商订单接口测试结果：
+
+```text
+requests: 4
+assertions: 30
+failed: 0
 ```
 
 ## 项目亮点
 
 - 使用 Environment 管理接口地址、用户 ID、商品 ID、购物车 ID 等变量。
 - 使用 Post-response 脚本完成状态码、字段类型、业务字段和异常响应断言。
+- 使用 Postman Mock Server 基于 Example 构建模拟接口，覆盖成功响应和异常响应。
 - 使用 Collection 级公共脚本统一校验响应时间和 5xx 服务端错误。
 - 使用 Newman 命令行执行接口自动化测试。
 - 使用 PowerShell 脚本封装 Newman 命令，实现一键运行并生成 HTML 报告。
