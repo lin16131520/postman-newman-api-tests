@@ -1,5 +1,7 @@
 # Postman + Newman 接口自动化测试项目
 
+[![Newman API Tests](https://github.com/lin16131520/postman-newman-api-tests/actions/workflows/newman-api-tests.yml/badge.svg)](https://github.com/lin16131520/postman-newman-api-tests/actions/workflows/newman-api-tests.yml)
+
 ## 项目简介
 
 本项目基于 Postman 和 Newman 完成 RESTful API 接口自动化测试，覆盖文章 CRUD、CSV 数据驱动、登录鉴权、Token 传递、电商购物车流程、异常场景和 Collection 级公共断言，并通过 Newman 生成 HTML 测试报告。
