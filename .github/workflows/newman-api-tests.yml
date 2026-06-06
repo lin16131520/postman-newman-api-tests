@@ -1,0 +1,41 @@
+name: Newman API Tests
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ecommerce-cart:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Newman dependencies
+        run: npm install
+
+      - name: Prepare report directory
+        run: mkdir -p reports
+
+      - name: Run ecommerce cart API tests
+        env:
+          FOLDER_NAME_BASE64: UHJvamVjdDAyLeeUteWVhui0reeJqei9pua1geeoiw==
+        run: |
+          export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
+          npm run test:ecommerce
+
+      - name: Upload Newman HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecommerce-cart-report
+          path: reports/ecommerce-cart-report.html
+          if-no-files-found: error
