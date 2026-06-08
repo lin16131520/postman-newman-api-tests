@@ -4,10 +4,15 @@ on:
   push:
     branches:
       - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
-  api-tests:
+  ecommerce-cart:
     name: Postman Newman API Tests
     runs-on: ubuntu-latest
 
@@ -40,6 +45,13 @@ jobs:
           export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
           npm run test:mock-order
 
+      - name: Run mock payment refund API tests
+        env:
+          FOLDER_NAME_BASE64: UHJvamVjdDA0LU1vY2vnlLXllYbmlK/ku5jpgIDmrL7mtYHnqIs=
+        run: |
+          export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
+          npm run test:payment-refund
+
       - name: Upload ecommerce cart HTML report
         if: always()
         uses: actions/upload-artifact@v4
@@ -54,4 +66,12 @@ jobs:
         with:
           name: mock-order-report
           path: reports/mock-order-report.html
+          if-no-files-found: error
+
+      - name: Upload mock payment refund HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mock-payment-refund-report
+          path: reports/mock-payment-refund-report.html
           if-no-files-found: error
