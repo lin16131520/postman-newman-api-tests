@@ -10,6 +10,8 @@ on:
       - main
       - master
   workflow_dispatch:
+  schedule:
+    - cron: '0 15 * * *'
 
 jobs:
   ecommerce-cart:
