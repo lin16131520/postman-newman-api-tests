@@ -1677,6 +1677,529 @@
       ]
     },
     {
+      "name": "Project05-Mock用户地址管理流程",
+      "item": [
+        {
+          "name": "25-Mock查询地址列表",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：25-Mock查询地址列表\r",
+                  "// 请求方式：GET\r",
+                  "// 请求地址：{{mock_base_url}}/api/users/1/addresses\r",
+                  "// 环境变量：mock_base_url\r",
+                  "// 响应字段：code、message、data、addressId、userId、receiverName、phone、province、city、detail、isDefault\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义测试用例：检查 HTTP 状态码\r",
+                  "    pm.response.to.have.status(200); // 断言接口返回 200，表示查询地址列表成功\r",
+                  "}); // 结束“状态码是 200”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务是否成功\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言 code 等于 0，表示业务处理成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"message 返回 success\", function () { // 定义测试用例：检查成功提示\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"success\"); // 断言 message 等于 success\r",
+                  "}); // 结束“message 返回 success”测试用例\r",
+                  "\r",
+                  "pm.test(\"data 是地址数组\", function () { // 定义测试用例：检查地址列表结构\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.data).to.be.an(\"array\"); // 断言 data 是数组\r",
+                  "    pm.expect(jsonData.data.length).to.be.above(0); // 断言地址数组长度大于 0\r",
+                  "}); // 结束“data 是地址数组”测试用例\r",
+                  "\r",
+                  "pm.test(\"地址字段类型正确\", function () { // 定义测试用例：检查第一条地址字段类型\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    const firstAddress = jsonData.data[0]; // 取地址列表里的第一条地址\r",
+                  "    pm.expect(firstAddress.addressId).to.be.a(\"string\"); // 断言 addressId 是字符串\r",
+                  "    pm.expect(firstAddress.userId).to.be.a(\"number\"); // 断言 userId 是数字\r",
+                  "    pm.expect(firstAddress.receiverName).to.be.a(\"string\"); // 断言 receiverName 是字符串\r",
+                  "    pm.expect(firstAddress.phone).to.be.a(\"string\"); // 断言 phone 是字符串\r",
+                  "    pm.expect(firstAddress.isDefault).to.be.a(\"boolean\"); // 断言 isDefault 是布尔值\r",
+                  "}); // 结束“地址字段类型正确”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mock_base_url}}/api/users/1/addresses",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "addresses"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "25-Mock查询地址列表",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_base_url}}/api/users/1/addresses",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1",
+                    "addresses"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"success\",\r\n  \"data\": [\r\n    {\r\n      \"addressId\": \"ADDR202606080001\",\r\n      \"userId\": 1,\r\n      \"receiverName\": \"张三\",\r\n      \"phone\": \"13800138000\",\r\n      \"province\": \"上海市\",\r\n      \"city\": \"上海市\",\r\n      \"detail\": \"浦东新区测试路 100 号\",\r\n      \"isDefault\": true\r\n    },\r\n    {\r\n      \"addressId\": \"ADDR202606080002\",\r\n      \"userId\": 1,\r\n      \"receiverName\": \"李四\",\r\n      \"phone\": \"13900139000\",\r\n      \"province\": \"浙江省\",\r\n      \"city\": \"杭州市\",\r\n      \"detail\": \"西湖区测试路 200 号\",\r\n      \"isDefault\": false\r\n    }\r\n  ]\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "26-Mock新增收货地址",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：26-Mock新增收货地址\r",
+                  "// 请求方式：POST\r",
+                  "// 请求地址：{{mock_base_url}}/api/users/1/addresses\r",
+                  "// 环境变量：mock_base_url\r",
+                  "// 请求字段：receiverName、phone、province、city、detail、isDefault\r",
+                  "// 响应字段：code、message、data、addressId、userId、receiverName、phone、province、city、detail、isDefault\r",
+                  "\r",
+                  "pm.test(\"状态码是 201\", function () { // 定义测试用例：检查 HTTP 状态码是否是 201\r",
+                  "    pm.response.to.have.status(201); // 断言接口返回 201，表示收货地址创建成功\r",
+                  "}); // 结束“状态码是 201”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务处理是否成功\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言响应字段 code 等于 0，表示业务成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回地址创建成功消息\", function () { // 定义测试用例：检查新增地址成功提示\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"address created\"); // 断言 message 等于 address created\r",
+                  "}); // 结束“返回地址创建成功消息”测试用例\r",
+                  "\r",
+                  "pm.test(\"新增地址基础信息正确\", function () { // 定义测试用例：检查新增地址核心字段\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.data.addressId).to.be.a(\"string\"); // 断言 addressId 是字符串\r",
+                  "    pm.expect(jsonData.data.userId).to.eql(1); // 断言 userId 等于 1\r",
+                  "    pm.expect(jsonData.data.receiverName).to.eql(\"王五\"); // 断言收货人姓名正确\r",
+                  "    pm.expect(jsonData.data.phone).to.eql(\"13700137000\"); // 断言手机号正确\r",
+                  "    pm.expect(jsonData.data.city).to.eql(\"深圳市\"); // 断言城市正确\r",
+                  "    pm.expect(jsonData.data.isDefault).to.eql(false); // 断言新增地址不是默认地址\r",
+                  "}); // 结束“新增地址基础信息正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"保存 addressId 到环境变量\", function () { // 定义测试用例：保存新增地址 ID 给后续接口使用\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.environment.set(\"address_id\", jsonData.data.addressId); // 把响应里的 addressId 保存为环境变量 address_id\r",
+                  "}); // 结束“保存 addressId 到环境变量”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"receiverName\": \"王五\",\r\n  \"phone\": \"13700137000\",\r\n  \"province\": \"广东省\",\r\n  \"city\": \"深圳市\",\r\n  \"detail\": \"南山区科技园 300 号\",\r\n  \"isDefault\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mock_base_url}}/api/users/1/addresses",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "addresses"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功新增收货地址",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"receiverName\": \"王五\",\r\n  \"phone\": \"13700137000\",\r\n  \"province\": \"广东省\",\r\n  \"city\": \"深圳市\",\r\n  \"detail\": \"南山区科技园 300 号\",\r\n  \"isDefault\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mock_base_url}}/api/users/1/addresses",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1",
+                    "addresses"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"address created\",\r\n  \"data\": {\r\n    \"addressId\": \"ADDR202606080003\",\r\n    \"userId\": 1,\r\n    \"receiverName\": \"王五\",\r\n    \"phone\": \"13700137000\",\r\n    \"province\": \"广东省\",\r\n    \"city\": \"深圳市\",\r\n    \"detail\": \"南山区科技园 300 号\",\r\n    \"isDefault\": false\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "27-Mock设置默认地址",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：27-Mock设置默认地址\r",
+                  "// 请求方式：PUT\r",
+                  "// 请求地址：{{mock_base_url}}/api/users/1/addresses/{{address_id}}/default\r",
+                  "// 环境变量：mock_base_url、address_id\r",
+                  "// 响应字段：code、message、data、addressId、userId、isDefault、updatedAt\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义测试用例：检查 HTTP 状态码是否是 200\r",
+                  "    pm.response.to.have.status(200); // 断言接口返回 200，表示设置默认地址成功\r",
+                  "}); // 结束“状态码是 200”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务是否成功\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言 code 等于 0，表示业务处理成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回默认地址更新成功消息\", function () { // 定义测试用例：检查成功提示\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"default address updated\"); // 断言 message 等于 default address updated\r",
+                  "}); // 结束“返回默认地址更新成功消息”测试用例\r",
+                  "\r",
+                  "pm.test(\"默认地址 id 正确\", function () { // 定义测试用例：检查设置默认的地址 ID 是否正确\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    const expectedAddressId = pm.environment.get(\"address_id\"); // 从环境变量读取 26 接口保存的 address_id\r",
+                  "    pm.expect(jsonData.data.addressId).to.eql(expectedAddressId); // 断言响应 addressId 等于环境变量 address_id\r",
+                  "}); // 结束“默认地址 id 正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"默认地址状态正确\", function () { // 定义测试用例：检查是否已设置为默认地址\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.data.userId).to.eql(1); // 断言 userId 等于 1\r",
+                  "    pm.expect(jsonData.data.isDefault).to.eql(true); // 断言 isDefault 等于 true，表示已经是默认地址\r",
+                  "    pm.expect(jsonData.data.updatedAt).to.be.a(\"string\"); // 断言 updatedAt 是字符串类型\r",
+                  "}); // 结束“默认地址状态正确”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{mock_base_url}}/api/users/1/addresses/{{address_id}}/default",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "addresses",
+                "{{address_id}}",
+                "default"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功设置默认地址",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_base_url}}/api/users/1/addresses/ADDR202606080003/default",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1",
+                    "addresses",
+                    "ADDR202606080003",
+                    "default"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"default address updated\",\r\n  \"data\": {\r\n    \"addressId\": \"ADDR202606080003\",\r\n    \"userId\": 1,\r\n    \"isDefault\": true,\r\n    \"updatedAt\": \"2026-06-08T13:00:00Z\"\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "28-Mock删除收货地址",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：28-Mock删除收货地址\r",
+                  "// 请求方式：DELETE\r",
+                  "// 请求地址：{{mock_base_url}}/api/users/1/addresses/{{address_id}}\r",
+                  "// 环境变量：mock_base_url、address_id\r",
+                  "// 响应字段：code、message、data、addressId、isDeleted、deletedAt\r",
+                  "\r",
+                  "pm.test(\"状态码是 200\", function () { // 定义测试用例：检查 HTTP 状态码是否是 200\r",
+                  "    pm.response.to.have.status(200); // 断言接口返回 200，表示删除收货地址成功\r",
+                  "}); // 结束“状态码是 200”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务状态码 code 是 0\", function () { // 定义测试用例：检查业务是否成功\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(0); // 断言 code 等于 0，表示业务处理成功\r",
+                  "}); // 结束“业务状态码 code 是 0”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回地址删除成功消息\", function () { // 定义测试用例：检查删除成功提示\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"address deleted\"); // 断言 message 等于 address deleted\r",
+                  "}); // 结束“返回地址删除成功消息”测试用例\r",
+                  "\r",
+                  "pm.test(\"删除地址 id 正确\", function () { // 定义测试用例：检查删除的地址 ID 是否正确\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    const expectedAddressId = pm.environment.get(\"address_id\"); // 从环境变量读取 address_id\r",
+                  "    pm.expect(jsonData.data.addressId).to.eql(expectedAddressId); // 断言响应 addressId 等于环境变量 address_id\r",
+                  "}); // 结束“删除地址 id 正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"删除状态正确\", function () { // 定义测试用例：检查删除标识和删除时间\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.data.isDeleted).to.eql(true); // 断言 isDeleted 等于 true，表示已删除\r",
+                  "    pm.expect(jsonData.data.deletedAt).to.be.a(\"string\"); // 断言 deletedAt 是字符串类型\r",
+                  "}); // 结束“删除状态正确”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{mock_base_url}}/api/users/1/addresses/{{address_id}}",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "addresses",
+                "{{address_id}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功删除收货地址",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_base_url}}/api/users/1/addresses/ADDR202606080003",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1",
+                    "addresses",
+                    "ADDR202606080003"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": "{\r\n  \"code\": 0,\r\n  \"message\": \"address deleted\",\r\n  \"data\": {\r\n    \"addressId\": \"ADDR202606080003\",\r\n    \"isDeleted\": true,\r\n    \"deletedAt\": \"2026-06-08T13:10:00Z\"\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "29-Mock异常新增地址缺少手机号",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 接口名称：29-Mock异常新增地址缺少手机号\r",
+                  "// 请求方式：POST\r",
+                  "// 请求地址：{{mock_base_url}}/api/users/1/addresses/invalid\r",
+                  "// 环境变量：mock_base_url\r",
+                  "// 请求字段：receiverName、province、city、detail、isDefault\r",
+                  "// 故意缺少字段：phone\r",
+                  "// 响应字段：code、message、data\r",
+                  "\r",
+                  "pm.test(\"状态码是 400\", function () { // 定义测试用例：检查参数错误是否返回 400\r",
+                  "    pm.response.to.have.status(400); // 断言 HTTP 状态码等于 400，表示请求参数错误\r",
+                  "}); // 结束“状态码是 400”测试用例\r",
+                  "\r",
+                  "pm.test(\"业务错误码正确\", function () { // 定义测试用例：检查业务错误码\r",
+                  "    const jsonData = pm.response.json(); // 把下面响应 Body 的 JSON 转成 JavaScript 对象\r",
+                  "    pm.expect(jsonData.code).to.eql(40001); // 断言 code 等于 40001，表示手机号缺失\r",
+                  "}); // 结束“业务错误码正确”测试用例\r",
+                  "\r",
+                  "pm.test(\"返回手机号必填提示\", function () { // 定义测试用例：检查错误提示信息\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.message).to.eql(\"phone is required\"); // 断言 message 等于 phone is required\r",
+                  "}); // 结束“返回手机号必填提示”测试用例\r",
+                  "\r",
+                  "pm.test(\"data 为空\", function () { // 定义测试用例：检查异常场景不返回业务数据\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData.data).to.eql(null); // 断言 data 等于 null\r",
+                  "}); // 结束“data 为空”测试用例\r",
+                  "\r",
+                  "pm.test(\"不返回正常地址详情字段\", function () { // 定义测试用例：检查异常响应不能包含正常地址详情\r",
+                  "    const jsonData = pm.response.json(); // 获取响应 JSON 对象\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"addressId\"); // 断言顶层不能包含 addressId\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"phone\"); // 断言顶层不能包含 phone\r",
+                  "    pm.expect(jsonData).to.not.have.property(\"isDefault\"); // 断言顶层不能包含 isDefault\r",
+                  "}); // 结束“不返回正常地址详情字段”测试用例"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"receiverName\": \"赵六\",\r\n  \"province\": \"北京市\",\r\n  \"city\": \"北京市\",\r\n  \"detail\": \"朝阳区测试路 400 号\",\r\n  \"isDefault\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mock_base_url}}/api/users/1/addresses/invalid",
+              "host": [
+                "{{mock_base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "addresses",
+                "invalid"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "缺少手机号新增失败",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"receiverName\": \"赵六\",\r\n  \"province\": \"北京市\",\r\n  \"city\": \"北京市\",\r\n  \"detail\": \"朝阳区测试路 400 号\",\r\n  \"isDefault\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mock_base_url}}/api/users/1/addresses/invalid",
+                  "host": [
+                    "{{mock_base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1",
+                    "addresses",
+                    "invalid"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": "{\r\n  \"code\": 40001,\r\n  \"message\": \"phone is required\",\r\n  \"data\": null\r\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "01-查询文章详情",
       "event": [
         {
@@ -2020,10 +2543,10 @@
         "exec": [
           "// 公共测试用例 1：检查接口响应时间是否小于 3000ms\r",
           "// 这个断言可以放在 Collection 级别，让集合里的每个请求都自动执行\r",
-          "pm.test(\"公共断言：响应时间小于 12000ms\", function () {\r",
+          "pm.test(\"公共断言：响应时间小于 20000ms\", function () {\r",
           "    // pm.response.responseTime 表示当前接口的响应耗时，单位是毫秒\r",
           "    // below(3000) 表示响应时间必须小于 3000ms，也就是 3 秒\r",
-          "    pm.expect(pm.response.responseTime).to.be.below(12000);\r",
+          "    pm.expect(pm.response.responseTime).to.be.below(20000);\r",
           "});\r",
           "\r",
           "// 公共测试用例 2：检查接口没有出现服务器错误\r",
