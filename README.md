@@ -99,19 +99,26 @@ assertions: 39
 failed: 0
 ```
 
-HTML 报告路径：
-
-```text
-reports\ecommerce-cart-report.html
-reports\mock-order-report.html
-```
-
 Mock 电商订单接口测试结果：
 
 ```text
 requests: 4
 assertions: 30
 failed: 0
+```
+优惠券与订单优惠流程测试结果：
+
+```text
+requests: 6
+assertions: 46
+failed: 0
+
+HTML 报告路径：
+
+```text
+reports\ecommerce-cart-report.html
+reports\mock-order-report.html
+reports/mock-coupon-discount-report.html
 ```
 
 ## 项目亮点
@@ -123,3 +130,4 @@ failed: 0
 - 使用 Newman 命令行执行接口自动化测试。
 - 使用 PowerShell 脚本封装 Newman 命令，实现一键运行并生成 HTML 报告。
 - 使用 GitHub Actions 接入 CI，实现接口自动化测试持续执行和报告归档。
+- 使用 Mock Server 构造优惠券领取、下单使用优惠券、查询优惠订单、过期优惠券、重复使用优惠券等业务场景。
