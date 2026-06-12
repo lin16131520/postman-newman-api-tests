@@ -60,6 +60,14 @@ jobs:
         run: |
           export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
           npm run test:address
+          
+      - name: Run mock coupon discount API tests
+        env:
+          FOLDER_NAME_BASE64: UHJvamVjdDA2LU1vY2vkvJjmg6DliLjkuI7orqLljZXkvJjmg6DmtYHnqIs=
+        run: |
+          export FOLDER_NAME="$(node -e "console.log(Buffer.from(process.env.FOLDER_NAME_BASE64, 'base64').toString('utf8'))")"
+          npm run test:coupon-discount
+          
 
       - name: Upload ecommerce cart HTML report
         if: always()
@@ -77,6 +85,15 @@ jobs:
           path: reports/mock-order-report.html
           if-no-files-found: error
 
+
+      - name: Upload mock coupon discount HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mock-coupon-discount-report
+          path: reports/mock-coupon-discount-report.html
+          if-no-files-found: error
+          
       - name: Upload mock payment refund HTML report
         if: always()
         uses: actions/upload-artifact@v4
