@@ -132,3 +132,4 @@ reports/mock-coupon-discount-report.html
 - 使用 GitHub Actions 接入 CI，实现接口自动化测试持续执行和报告归档。
 - 使用 Mock Server 构造优惠券领取、下单使用优惠券、查询优惠订单、过期优惠券、重复使用优惠券等业务场景。
 - 学习记录：2026-11-08 第一次在本地练习 commit 和 push。
+- 学习记录：2026-11-08 第一次练习分支和 pull request。
